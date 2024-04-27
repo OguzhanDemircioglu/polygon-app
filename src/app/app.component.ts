@@ -22,19 +22,18 @@ import 'bootstrap/dist/js/bootstrap.js';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  clickedPoints: Point[] = [];
 
   constructor() {}
 
   ngOnInit(): void {
-    
+
     const map = new Map({
       target: 'map',
       layers: [
         new TileLayer({
           source: new OSM({
             attributions: '',
-            crossOrigin: 'anonymous'            
+            crossOrigin: 'anonymous'
           })
         })
       ],
@@ -57,9 +56,10 @@ export class AppComponent implements OnInit {
     });
     map.addLayer(vectorLayer);
 
-    const addPointOnClick: (event: MapBrowserEvent<MouseEvent>) => void = (
-      event
-    ) => {
+    const addPointButton = document.getElementById('add-point-button');
+    const cancelPointButton = document.getElementById('cancel-point-button');
+
+    const addPointOnClick: (event: MapBrowserEvent<MouseEvent>) => void = (event) => {
       const features = vectorSource.getFeatures();
 
       if (features.length < 5) {
@@ -67,12 +67,23 @@ export class AppComponent implements OnInit {
         const point = new Feature({
           geometry: new Point(coordinate),
         });
-        
         vectorSource.addFeature(point);
-        console.log('Clicked point:', coordinate); 
+        console.log('Clicked point:', coordinate);
       }
     };
 
-    map.on('click', addPointOnClick);
+    if (addPointButton) {
+      addPointButton.addEventListener('click', () => {
+        map.on('click', addPointOnClick);
+      });
+    }
+
+    if (cancelPointButton) {
+      cancelPointButton.addEventListener('click', () => {
+        map.un('click', addPointOnClick);
+        vectorSource.clear();
+      });
+    }
+
   }
 }
