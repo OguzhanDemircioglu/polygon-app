@@ -1,59 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <style>
-      .map {
-        width: 100%;
-        height: 400px;
-      }
-      a.skiplink {
-        position: absolute;
-        clip: rect(1px, 1px, 1px, 1px);
-        padding: 0;
-        border: 0;
-        height: 1px;
-        width: 1px;
-        overflow: hidden;
-      }
-      a.skiplink:focus {
-        clip: auto;
-        height: auto;
-        width: auto;
-        background-color: #fff;
-        padding: 0.3em;
-      }
-      #map:focus {
-        outline: #4A74A8 solid 0.15em;
-      }
-    </style>
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <title>polygon-app</title>
+</head>
 
-  <nav class="navbar navbar-expand-lg custom-navbar-bg">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/">PolygonApp</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-              data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/">Home</a>
-          </li>
-        </ul>
-      </div>
+<nav class="navbar navbar-expand-lg custom-navbar-bg">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">PolygonApp</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="/">Home</a>
+        </li>
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <body>
-    <div id="map" class="map">
-    <a class="skiplink" href="#main">Skip to main content</a>
-    </div>
-    <div class="buttons-container">
-      <button id="add-point-button">Add Drawing</button>
-      <button id="cancel-point-button">Cancel</button>
-    </div>
+<body>
+<div id="map" class="map">
+  <a class="skiplink" href="#main">Skip to main content</a>
+</div>
+<div class="buttons-container">
+  <button id="add-point-button">Add Drawing</button>
+  <button id="cancel-point-button" (click)="refresh()">Cancel</button>
+</div>
 
-  </body>
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <h2>Seçilen Noktalar</h2>
+    <ul>
+      <li *ngFor="let point of selectedPoints">
+        <b>Kullanıcı Adı:</b> {{ point.username }}<br>
+        <b>Koordinatlar:</b> {{ point.coordinates.join(', ') }}
+      </li>
+    </ul>
+    <div class="form-group">
+      <label for="usernameInput">Kullanıcı Adı:</label>
+      <input type="text" class="form-control" id="usernameInput" placeholder="Kullanıcı Adı">
+    </div>
+    <button (click)="refresh()">Kapat</button>
+    <button (click)="sendPoints()">Gönder</button>
+  </div>
+</div>
+
+</body>
 </html>
