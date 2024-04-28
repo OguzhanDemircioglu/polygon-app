@@ -19,7 +19,7 @@ import {urlConstants} from "./constants/Constants";
 import {Polygon} from "./req-res/Polygon";
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgxDatatableModule} from "@swimlane/ngx-datatable";
-import { useGeographic } from 'ol/proj';
+import * as olProj from 'ol/proj';
 
 interface ClickedPoint {
   coordinates: number[];
@@ -36,18 +36,24 @@ export class AppComponent implements OnInit {
 
   showCancelButton = false;
   vectorSource = new VectorSource();
+  vectorLayer = new VectorLayer();
   pointsAdded = 0;
   clickedPoints: ClickedPoint[] = [];
   title: string = 'polygon-app';
   pointsToSend: { coordinates: number[]; username: string, number: string }[] = [];
-  items: Polygon[]=[];
+  items: Polygon[] = [];
   public map: Map | undefined;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   ngOnInit(): void {
+    this.map?.addLayer(this.vectorLayer);
+    olProj.useGeographic();
 
-    useGeographic();
+    const vectorLayer = new VectorLayer({
+      source: this.vectorSource,
+    });
 
     this.map = new Map({
       target: 'map',
@@ -57,15 +63,16 @@ export class AppComponent implements OnInit {
             attributions: '',
             crossOrigin: 'anonymous'
           })
-        })
+        }),
+        this.vectorLayer,
       ],
       view: new View({
         center: [39.9392, 32.8962],
-        zoom: 4,
+        zoom: 3,
       }),
     });
 
-    const vectorLayer = new VectorLayer({
+    this.vectorLayer = new VectorLayer({
       source: this.vectorSource,
       style: new Style({
         image: new CircleStyle({
@@ -75,7 +82,7 @@ export class AppComponent implements OnInit {
         }),
       }),
     });
-    this.map?.addLayer(vectorLayer);
+    this.map?.addLayer(this.vectorLayer);
 
     const addPointButton = document.getElementById('add-point-button');
 
@@ -98,7 +105,6 @@ export class AppComponent implements OnInit {
             geometry: new Point(coordinates),
           });
           this.vectorSource.addFeature(point);
-          console.log('Clicked point:', coordinates);
           this.pointsAdded++;
 
           this.clickedPoints.push(clickedPoint);
@@ -196,6 +202,37 @@ export class AppComponent implements OnInit {
   }
 
   showDetails(row: any) {
-    console.log(row);
+    const modal = document.getElementById('modal1');
+    if (modal) {
+      modal.style.display = 'none';
+    } else {
+      console.error('Modal element with ID "modal" not found.');
+    }
+    const list = row.list.map((item: any) => [item.latitude, item.longitude]);
+    this.addMarker(list.map((coordinate: [number, number][]) => coordinate.reverse()));
   }
+
+  addMarker(coordinates: [number, number][]): void {
+    console.log('Coordinates:', coordinates); // Log the entire array
+
+    coordinates.forEach((coordinate: [number, number], index: number) => {
+      console.log('Adding marker at index:', index, 'with coordinates:', coordinate);
+
+      const marker = new Feature({
+        geometry: new Point(coordinate)
+      });
+
+      marker.setStyle(new Style({
+        image: new CircleStyle({
+          radius: 6,
+          fill: new Fill({color: 'red'}),
+          stroke: new Stroke({color: 'white', width: 2}),
+        }),
+      }));
+
+      this.vectorSource.addFeature(marker);
+
+    });
+  }
+
 }
