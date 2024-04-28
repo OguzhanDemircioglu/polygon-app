@@ -14,10 +14,11 @@ import {CommonModule} from "@angular/common";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.js';
-import {HttpClient, HttpClientModule, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {urlConstants} from "./constants/Constants";
 import {Polygon} from "./req-res/Polygon";
 import {ReactiveFormsModule} from "@angular/forms";
+import {NgxDatatableModule} from "@swimlane/ngx-datatable";
 
 interface ClickedPoint {
   coordinates: number[];
@@ -27,18 +28,19 @@ interface ClickedPoint {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, HttpClientModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterOutlet, HttpClientModule, ReactiveFormsModule, NgxDatatableModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
 
-  items: Object = new Polygon();
+  showCancelButton = false;
   vectorSource = new VectorSource();
   pointsAdded = 0;
   clickedPoints: ClickedPoint[] = [];
   title: string = 'polygon-app';
   pointsToSend: { coordinates: number[]; username: string, number: string }[] = [];
+  items: Polygon[]=[];
 
   constructor(private http: HttpClient) {}
 
@@ -75,6 +77,9 @@ export class AppComponent implements OnInit {
     const addPointButton = document.getElementById('add-point-button');
 
     const addPointOnClick: (event: MapBrowserEvent<MouseEvent>) => void = (event) => {
+
+      this.showCancelButton = true;
+
       const features = this.vectorSource.getFeatures();
 
       if (features.length < 5) {
@@ -143,6 +148,17 @@ export class AppComponent implements OnInit {
     this.postMap();
   }
 
+  queryDrawing() {
+    const modal = document.getElementById('modal1');
+    if (modal) {
+      modal.style.display = 'block';
+    } else {
+      console.error('Modal element with ID "modal" not found.');
+    }
+
+    this.findAll();
+  }
+
   private async findAll() {
     this.http.get<any>(urlConstants.ROOT.ROOT_ADDRESS)
       .subscribe({
@@ -175,6 +191,10 @@ export class AppComponent implements OnInit {
           console.log(error)
         }
       });
+  }
+
+  showDetails(row: any) {
+    console.log(row);
   }
 
 }

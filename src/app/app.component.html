@@ -26,15 +26,58 @@
 <div id="map" class="map">
   <a class="skiplink" href="#main">Skip to main content</a>
 </div>
+<br/>
 <div class="buttons-container">
   <button id="add-point-button">Add Drawing</button>
-  <button id="cancel-point-button" (click)="refresh()">Cancel</button>
+  <button id="cancel-point-button" *ngIf="showCancelButton" (click)="refresh()">Cancel</button>
+  <button id="query-point-button" (click)="queryDrawing()">Query Drawing</button>
+</div>
+
+<div id="modal1" class="modal1">
+  <div class="modal-content1">
+
+    <ngx-datatable
+      [rows]="items"
+      [columnMode]="'flex'"
+      [headerHeight]="50"
+      [footerHeight]="150"
+      [rowHeight]="200"
+    >
+      <ngx-datatable-column name="Username" prop="username" [flexGrow]="1">
+        <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+          {{ value }}
+        </ng-template>
+      </ngx-datatable-column>
+
+      <ngx-datatable-column name="Number" prop="number" [flexGrow]="1">
+        <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+          {{ value }}
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Coordinates" prop="list" [flexGrow]="4">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <ul>
+            <li *ngFor="let item of row.list">
+              Latitude: {{ item.latitude }}, Longitude: {{ item.longitude }}
+            </li>
+          </ul>
+        </ng-template>
+      </ngx-datatable-column>
+      <ngx-datatable-column name="Actions" [flexGrow]="1">
+        <ng-template let-row="row" ngx-datatable-cell-template>
+          <button (click)="showDetails(row)">Show On Map</button>
+        </ng-template>
+      </ngx-datatable-column>
+    </ngx-datatable>
+
+    <button style="width: 100%" (click)="refresh()">Close</button>
+  </div>
 </div>
 
 <div id="modal" class="modal">
   <div class="modal-content">
     <div class="form-group">
-      <label for="usernameInput" >Username:</label>
+      <label for="usernameInput">Username:</label>
       <input type="text" class="form-control" id="usernameInput" placeholder="Username">
 
       <label for="numberInput">Number:</label>
