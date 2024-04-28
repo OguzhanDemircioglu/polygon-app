@@ -19,10 +19,10 @@ import {urlConstants} from "./constants/Constants";
 import {Polygon} from "./req-res/Polygon";
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgxDatatableModule} from "@swimlane/ngx-datatable";
+import { useGeographic } from 'ol/proj';
 
 interface ClickedPoint {
   coordinates: number[];
-  username: string;
 }
 
 @Component({
@@ -41,12 +41,15 @@ export class AppComponent implements OnInit {
   title: string = 'polygon-app';
   pointsToSend: { coordinates: number[]; username: string, number: string }[] = [];
   items: Polygon[]=[];
+  public map: Map | undefined;
 
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
 
-    const map = new Map({
+    useGeographic();
+
+    this.map = new Map({
       target: 'map',
       layers: [
         new TileLayer({
@@ -58,7 +61,7 @@ export class AppComponent implements OnInit {
       ],
       view: new View({
         center: [39.9392, 32.8962],
-        zoom: 3,
+        zoom: 4,
       }),
     });
 
@@ -72,7 +75,7 @@ export class AppComponent implements OnInit {
         }),
       }),
     });
-    map.addLayer(vectorLayer);
+    this.map?.addLayer(vectorLayer);
 
     const addPointButton = document.getElementById('add-point-button');
 
@@ -83,13 +86,12 @@ export class AppComponent implements OnInit {
       const features = this.vectorSource.getFeatures();
 
       if (features.length < 5) {
-        const clickedCoordinate = map.getEventCoordinate(event.originalEvent);
+        const clickedCoordinate = this.map?.getEventCoordinate(event.originalEvent);
         if (clickedCoordinate) {
           const coordinates = [clickedCoordinate[0], clickedCoordinate[1]];
 
           const clickedPoint: ClickedPoint = {
             coordinates,
-            username: '',
           };
 
           const point = new Feature({
@@ -115,7 +117,7 @@ export class AppComponent implements OnInit {
 
     if (addPointButton) {
       addPointButton.addEventListener('click', () => {
-        map.on('click', addPointOnClick);
+        this.map?.on('click', addPointOnClick);
       });
     }
   }
@@ -196,5 +198,4 @@ export class AppComponent implements OnInit {
   showDetails(row: any) {
     console.log(row);
   }
-
 }
