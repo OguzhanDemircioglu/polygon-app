@@ -33,16 +33,12 @@
 
 <div id="modal" class="modal">
   <div class="modal-content">
-    <h2>Seçilen Noktalar</h2>
-    <ul>
-      <li *ngFor="let point of selectedPoints">
-        <b>Kullanıcı Adı:</b> {{ point.username }}<br>
-        <b>Koordinatlar:</b> {{ point.coordinates.join(', ') }}
-      </li>
-    </ul>
     <div class="form-group">
-      <label for="usernameInput">Kullanıcı Adı:</label>
-      <input type="text" class="form-control" id="usernameInput" placeholder="Kullanıcı Adı">
+      <label for="usernameInput" >Username:</label>
+      <input type="text" class="form-control" id="usernameInput" placeholder="Username">
+
+      <label for="numberInput">Number:</label>
+      <input type="number" class="form-control" id="numberInput" placeholder="Number">
     </div>
     <button (click)="refresh()">Cancel</button>
     <button (click)="sendPoints()">Submit</button>
